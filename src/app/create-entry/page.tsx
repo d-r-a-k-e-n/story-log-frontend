@@ -3,10 +3,11 @@ import { useMutation, useLazyQuery } from "@apollo/client/react";
 import { CREATE_ENTRY_MUTATION } from "@/src/graphql/entry/entry.mutation";
 import { Button } from "@/src/components/ui/button";
 import { Input } from "@/src/components/ui/input";
-import { ICreateEntryMutation } from "./types/createEntry.interface";
-import { useState } from "react";
-import { IGetInfoTmdb } from "./types/getInfoTmdb.interface";
+import { ICreateEntryMutation } from "@/src/app/create-entry/types/createEntry.interface";
+import { useState, useEffect } from "react";
+import { IGetInfoTmdb } from "@/src/app/create-entry/types/getInfoTmdb.interface";
 import { GET_INFO_TMBD_QUERY } from "@/src/graphql/entry/entry.query";
+import { useDebounce } from "@/src/hooks/useDebounce";
 
 export default function CreateEntryPage() {
   const [title, setTitle] = useState<string>("");
@@ -24,6 +25,16 @@ export default function CreateEntryPage() {
 
   const [getInfoTmdb, { data: getInfoTmdbData }] =
     useLazyQuery<IGetInfoTmdb>(GET_INFO_TMBD_QUERY);
+
+  const debouncedTitle = useDebounce(title, 1000);
+
+  useEffect(() => {
+    getInfoTmdb({
+      variables: {
+        input: { name: debouncedTitle },
+      },
+    });
+  }, [debouncedTitle]);
 
   function handleCreateEntry(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -44,35 +55,18 @@ export default function CreateEntryPage() {
     });
   }
 
-  function handleFindInfo(e: React.MouseEvent<HTMLButtonElement>) {
-    e.preventDefault();
-
-    getInfoTmdb({
-      variables: {
-        input: {
-          name: title,
-        },
-      },
-    });
-  }
-
   return (
     <section className="flex flex-col items-center justify-center min-h-screen p-4 sm:p-6">
       <form
         className="flex flex-col gap-2 w-full max-w-[280px] sm:max-w-xs items-center"
         onSubmit={handleCreateEntry}
       >
-        <div className="flex flex-row gap-2 w-full max-w-[280px] sm:max-w-xs items-center">
-          <Input
-            type="text"
-            placeholder="Title"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-          />
-          <Button type="button" onClick={handleFindInfo}>
-            Find Info
-          </Button>
-        </div>
+        <Input
+          type="text"
+          placeholder="Title"
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+        />
 
         <Input
           type="text"
@@ -127,7 +121,7 @@ export default function CreateEntryPage() {
       {getInfoTmdbData?.getInfo && getInfoTmdbData.getInfo.length > 0 && (
         <div className="mt-4 flex flex-col gap-2 w-full max-w-[280px] sm:max-w-xs">
           {getInfoTmdbData.getInfo.map((item, index) => {
-            return <p>{item.posterPath}</p>;
+            return <p key={index}>{item.posterPath}</p>;
           })}
         </div>
       )}
