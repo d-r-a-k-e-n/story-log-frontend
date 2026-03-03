@@ -37,7 +37,7 @@ export default function LoginPage() {
   };
 
   return (
-    <section className="flex flex-col items-center justify-center min-h-screen p-4 sm:p-6">
+    <main className="flex flex-col items-center justify-center min-h-screen p-4 sm:p-6">
       <form
         className="flex flex-col gap-2 w-full max-w-[280px] sm:max-w-xs items-center"
         onSubmit={handleLogin}
@@ -72,6 +72,6 @@ export default function LoginPage() {
           </Link>
         </p>
       </form>
-    </section>
+    </main>
   );
 }

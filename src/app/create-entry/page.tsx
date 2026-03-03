@@ -5,9 +5,13 @@ import { Button } from "@/src/components/ui/button";
 import { Input } from "@/src/components/ui/input";
 import { ICreateEntryMutation } from "@/src/app/create-entry/types/createEntry.interface";
 import { useState, useEffect } from "react";
-import { IGetInfoTmdb } from "@/src/app/create-entry/types/getInfoTmdb.interface";
-import { GET_INFO_TMBD_QUERY } from "@/src/graphql/entry/entry.query";
+import {
+  IGetInfoFromTmdb,
+  IGetInfoFromTmdbItem,
+} from "@/src/app/create-entry/types/getInfoFromTmdb.interface";
+import { GET_INFO_FROM_TMDB_QUERY } from "@/src/graphql/entry/entry.query";
 import { useDebounce } from "@/src/hooks/useDebounce";
+import { SearchResultCard } from "@/src/components/searchResultCard/searchResultCard";
 
 export default function CreateEntryPage() {
   const [title, setTitle] = useState<string>("");
@@ -24,7 +28,7 @@ export default function CreateEntryPage() {
   );
 
   const [getInfoTmdb, { data: getInfoTmdbData }] =
-    useLazyQuery<IGetInfoTmdb>(GET_INFO_TMBD_QUERY);
+    useLazyQuery<IGetInfoFromTmdb>(GET_INFO_FROM_TMDB_QUERY);
 
   const debouncedTitle = useDebounce(title, 1000);
 
@@ -56,18 +60,41 @@ export default function CreateEntryPage() {
   }
 
   return (
-    <section className="flex flex-col items-center justify-center min-h-screen p-4 sm:p-6">
+    <main className="flex flex-col items-center justify-center min-h-screen p-4 sm:p-6">
       <form
         className="flex flex-col gap-2 w-full max-w-[280px] sm:max-w-xs items-center"
         onSubmit={handleCreateEntry}
       >
-        <Input
-          type="text"
-          placeholder="Title"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-        />
+        <div className="relative w-full">
+          <Input
+            type="text"
+            placeholder="Title"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+          />
 
+          {getInfoTmdbData?.getInfoFromTmdb &&
+            getInfoTmdbData.getInfoFromTmdb.length > 0 && (
+              <div className="absolute top-full left-0 right-0 mt-1 bg-white border rounded-md shadow-lg z-50 max-h-60 overflow-y-auto flex flex-col gap-2 p-2">
+                {getInfoTmdbData.getInfoFromTmdb.map(
+                  ({
+                    posterPath,
+                    title,
+                    rating,
+                    genreIds,
+                  }: IGetInfoFromTmdbItem) => (
+                    <SearchResultCard
+                      key={posterPath}
+                      imgUrl={posterPath}
+                      title={title}
+                      rating={rating}
+                      genres={genreIds}
+                    />
+                  ),
+                )}
+              </div>
+            )}
+        </div>
         <Input
           type="text"
           placeholder="Description"
@@ -118,13 +145,6 @@ export default function CreateEntryPage() {
         />
         <Button type="submit">Create Entry</Button>
       </form>
-      {getInfoTmdbData?.getInfo && getInfoTmdbData.getInfo.length > 0 && (
-        <div className="mt-4 flex flex-col gap-2 w-full max-w-[280px] sm:max-w-xs">
-          {getInfoTmdbData.getInfo.map((item, index) => {
-            return <p key={index}>{item.posterPath}</p>;
-          })}
-        </div>
-      )}
-    </section>
+    </main>
   );
 }

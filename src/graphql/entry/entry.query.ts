@@ -8,11 +8,13 @@ export const GET_ALL_ENTRY_QUERY = gql`
   }
 `;
 
-export const GET_INFO_TMBD_QUERY = gql`
-  query GetInfoTmdb($input: GetInfoTmdbInput!) {
-    getInfo(input: $input) {
+export const GET_INFO_FROM_TMDB_QUERY = gql`
+  query GetInfoFromTmdb($input: GetInfoFromTmdbInput!) {
+    getInfoFromTmdb(input: $input) {
       title
       posterPath
+      rating
+      genreIds
     }
   }
 `;

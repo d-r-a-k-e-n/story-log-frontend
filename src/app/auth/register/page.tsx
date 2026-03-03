@@ -8,8 +8,8 @@ import {
 } from "@/src/graphql/auth/auth.mutation";
 import { Input } from "@/src/components/ui/input";
 import { Button } from "@/src/components/ui/button";
-import { ILoginResponse } from "../login/types/loginData.interface";
-import { ILoginInput } from "../login/types/loginInput.interface";
+import { ILoginResponse } from "@/src/app/auth/login/types/loginData.interface";
+import { ILoginInput } from "@/src/app/auth/login/types/loginInput.interface";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 
