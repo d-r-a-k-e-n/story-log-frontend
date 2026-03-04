@@ -3,4 +3,5 @@ export interface ISearchResultCardProps {
   title: string;
   rating?: number;
   genres?: string[];
+  onClick: () => void;
 }

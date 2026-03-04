@@ -12,17 +12,28 @@ import {
 import { GET_INFO_FROM_TMDB_QUERY } from "@/src/graphql/entry/entry.query";
 import { useDebounce } from "@/src/hooks/useDebounce";
 import { SearchResultCard } from "@/src/components/searchResultCard/searchResultCard";
+import { Textarea } from "@/src/components/ui/textarea";
+
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "@/src/components/ui/select";
 
 export default function CreateEntryPage() {
   const [title, setTitle] = useState<string>("");
   const [description, setDescription] = useState<string>("");
   const [author, setAuthor] = useState<string>("");
   const [image, setImage] = useState<string>("");
-  const [rating, setRating] = useState<number>(0);
-  const [userId, setUserId] = useState<number>(0);
-  const [genreId, setGenreId] = useState<number>(0);
-  const [typeId, setTypeId] = useState<number>(0);
-  const [statusId, setStatusId] = useState<number>(0);
+  const [rating, setRating] = useState<number | null>(null);
+  const [userId, setUserId] = useState<number>();
+  const [genreId, setGenreId] = useState<number>();
+  const [typeId, setTypeId] = useState<number | null>(null);
+  const [statusId, setStatusId] = useState<number | null>(null);
   const [createEntry] = useMutation<ICreateEntryMutation>(
     CREATE_ENTRY_MUTATION,
   );
@@ -59,6 +70,10 @@ export default function CreateEntryPage() {
     });
   }
 
+  const handleSearchResultCardClick = (title: string, rating: number) => {
+    setTitle(title);
+    setRating(rating);
+  };
   return (
     <main className="flex flex-col items-center justify-center min-h-screen p-4 sm:p-6">
       <form
@@ -84,6 +99,7 @@ export default function CreateEntryPage() {
                     genreIds,
                   }: IGetInfoFromTmdbItem) => (
                     <SearchResultCard
+                      onClick={() => handleSearchResultCardClick(title, rating)}
                       key={posterPath}
                       imgUrl={posterPath}
                       title={title}
@@ -95,8 +111,8 @@ export default function CreateEntryPage() {
               </div>
             )}
         </div>
-        <Input
-          type="text"
+        <Textarea
+          className="max-h-40"
           placeholder="Description"
           value={description}
           onChange={(e) => setDescription(e.target.value)}
@@ -108,41 +124,51 @@ export default function CreateEntryPage() {
           onChange={(e) => setAuthor(e.target.value)}
         />
         <Input
-          type="text"
-          placeholder="Image"
-          value={image}
-          onChange={(e) => setImage(e.target.value)}
-        />
-        <Input
           type="number"
           placeholder="Rating"
-          value={rating}
+          value={rating ?? ""}
           onChange={(e) => setRating(Number(e.target.value))}
         />
         <Input
-          type="number"
-          placeholder="User ID"
-          value={userId}
-          onChange={(e) => setUserId(Number(e.target.value))}
-        />
-        <Input
-          type="number"
-          placeholder="Genre ID"
+          type="number" // TODO: add genres dropdown
+          placeholder="Genre"
           value={genreId}
           onChange={(e) => setGenreId(Number(e.target.value))}
         />
-        <Input
-          type="number"
-          placeholder="Type ID"
-          value={typeId}
-          onChange={(e) => setTypeId(Number(e.target.value))}
-        />
-        <Input
-          type="number"
-          placeholder="Status ID"
-          value={statusId}
-          onChange={(e) => setStatusId(Number(e.target.value))}
-        />
+        <Select
+          value={typeId?.toString() ?? ""}
+          onValueChange={(value) => setTypeId(+value)}
+        >
+          <SelectTrigger className="w-full">
+            <SelectValue placeholder="Select Type" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectGroup>
+              <SelectLabel>Type</SelectLabel>
+              <SelectItem value="1">Film</SelectItem>
+              <SelectItem value="2">Series</SelectItem>
+              <SelectItem value="3">Book</SelectItem>
+            </SelectGroup>
+          </SelectContent>
+        </Select>
+        <Select
+          value={statusId?.toString() ?? ""}
+          onValueChange={(value) => setStatusId(+value)}
+        >
+          <SelectTrigger className="w-full">
+            <SelectValue placeholder="Select Status" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectGroup>
+              <SelectLabel>Status</SelectLabel>
+              <SelectItem value="1">Planning</SelectItem>
+              <SelectItem value="2">In Progress</SelectItem>
+              <SelectItem value="3">Completed</SelectItem>
+              <SelectItem value="4">On Hold</SelectItem>
+              <SelectItem value="5">Dropped</SelectItem>
+            </SelectGroup>
+          </SelectContent>
+        </Select>
         <Button type="submit">Create Entry</Button>
       </form>
     </main>
