@@ -1,5 +1,5 @@
 "use client";
-import { useMutation, useLazyQuery } from "@apollo/client/react";
+import { useMutation, useLazyQuery, useQuery } from "@apollo/client/react";
 import { CREATE_ENTRY_MUTATION } from "@/src/graphql/entry/entry.mutation";
 import { Button } from "@/src/components/ui/button";
 import { Input } from "@/src/components/ui/input";
@@ -9,20 +9,21 @@ import {
   IGetInfoFromTmdb,
   IGetInfoFromTmdbItem,
 } from "@/src/app/create-entry/types/getInfoFromTmdb.interface";
-import { GET_INFO_FROM_TMDB_QUERY } from "@/src/graphql/entry/entry.query";
+import {
+  GET_INFO_FROM_TMDB_QUERY,
+  GET_ALL_GENRES_QUERY,
+  GET_ALL_STATUSES_QUERY,
+  GET_ALL_TYPES_QUERY,
+} from "@/src/graphql/entry/entry.query";
 import { useDebounce } from "@/src/hooks/useDebounce";
 import { SearchResultCard } from "@/src/components/searchResultCard/searchResultCard";
 import { Textarea } from "@/src/components/ui/textarea";
 
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectLabel,
-  SelectTrigger,
-  SelectValue,
-} from "@/src/components/ui/select";
+import { IGetAllGenres } from "@/src/app/create-entry/types/getAllGenres.interface";
+import { IGetAllStatuses } from "@/src/app/create-entry/types/getAllStatuses.interface";
+import { IGetAllTypes } from "@/src/app/create-entry/types/getAllTypes.interface";
+
+import { CreateEntrySelect } from "@/src/components/createEntrySelect/createEntrySelect";
 
 export default function CreateEntryPage() {
   const [title, setTitle] = useState<string>("");
@@ -40,6 +41,15 @@ export default function CreateEntryPage() {
 
   const [getInfoTmdb, { data: getInfoTmdbData }] =
     useLazyQuery<IGetInfoFromTmdb>(GET_INFO_FROM_TMDB_QUERY);
+
+  const { data: getAllGenresData } =
+    useQuery<IGetAllGenres>(GET_ALL_GENRES_QUERY);
+
+  const { data: getAllStatusesData } = useQuery<IGetAllStatuses>(
+    GET_ALL_STATUSES_QUERY,
+  );
+
+  const { data: getAllTypesData } = useQuery<IGetAllTypes>(GET_ALL_TYPES_QUERY);
 
   const debouncedTitle = useDebounce(title, 1000);
 
@@ -129,46 +139,27 @@ export default function CreateEntryPage() {
           value={rating ?? ""}
           onChange={(e) => setRating(Number(e.target.value))}
         />
-        <Input
-          type="number" // TODO: add genres dropdown
-          placeholder="Genre"
-          value={genreId}
-          onChange={(e) => setGenreId(Number(e.target.value))}
+
+        <CreateEntrySelect
+          value={genreId?.toString() ?? ""}
+          onChange={(value) => setGenreId(+value)}
+          options={getAllGenresData?.getAllGenres ?? []}
+          label="Genre"
         />
-        <Select
+
+        <CreateEntrySelect
           value={typeId?.toString() ?? ""}
-          onValueChange={(value) => setTypeId(+value)}
-        >
-          <SelectTrigger className="w-full">
-            <SelectValue placeholder="Select Type" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectGroup>
-              <SelectLabel>Type</SelectLabel>
-              <SelectItem value="1">Film</SelectItem>
-              <SelectItem value="2">Series</SelectItem>
-              <SelectItem value="3">Book</SelectItem>
-            </SelectGroup>
-          </SelectContent>
-        </Select>
-        <Select
+          onChange={(value) => setTypeId(+value)}
+          options={getAllTypesData?.getAllTypes ?? []}
+          label="Type"
+        />
+
+        <CreateEntrySelect
           value={statusId?.toString() ?? ""}
-          onValueChange={(value) => setStatusId(+value)}
-        >
-          <SelectTrigger className="w-full">
-            <SelectValue placeholder="Select Status" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectGroup>
-              <SelectLabel>Status</SelectLabel>
-              <SelectItem value="1">Planning</SelectItem>
-              <SelectItem value="2">In Progress</SelectItem>
-              <SelectItem value="3">Completed</SelectItem>
-              <SelectItem value="4">On Hold</SelectItem>
-              <SelectItem value="5">Dropped</SelectItem>
-            </SelectGroup>
-          </SelectContent>
-        </Select>
+          onChange={(value) => setStatusId(+value)}
+          options={getAllStatusesData?.getAllStatuses ?? []}
+          label="Status"
+        />
         <Button type="submit">Create Entry</Button>
       </form>
     </main>

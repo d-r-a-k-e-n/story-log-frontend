@@ -18,3 +18,30 @@ export const GET_INFO_FROM_TMDB_QUERY = gql`
     }
   }
 `;
+
+export const GET_ALL_GENRES_QUERY = gql`
+  query GetAllGenres {
+    getAllGenres {
+      id
+      name
+    }
+  }
+`;
+
+export const GET_ALL_STATUSES_QUERY = gql`
+  query GetAllStatuses {
+    getAllStatuses {
+      id
+      name
+    }
+  }
+`;
+
+export const GET_ALL_TYPES_QUERY = gql`
+  query GetAllTypes {
+    getAllTypes {
+      id
+      name
+    }
+  }
+`;
