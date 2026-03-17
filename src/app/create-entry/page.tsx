@@ -24,15 +24,17 @@ import { IGetAllStatuses } from "@/src/app/create-entry/types/getAllStatuses.int
 import { IGetAllTypes } from "@/src/app/create-entry/types/getAllTypes.interface";
 
 import { CreateEntrySelect } from "@/src/components/createEntrySelect/createEntrySelect";
+import { MultiSelect } from "@/src/components/ui/multi-select";
 
 export default function CreateEntryPage() {
   const [title, setTitle] = useState<string>("");
   const [description, setDescription] = useState<string>("");
-  const [author, setAuthor] = useState<string>("");
   const [image, setImage] = useState<string>("");
   const [rating, setRating] = useState<number | null>(null);
   const [userId, setUserId] = useState<number>();
-  const [genreId, setGenreId] = useState<number>();
+  const [genreId, setGenreId] = useState<number | null>(null);
+  const [genres, setGenres] = useState<string[]>([]);
+  const [selectedGenres, setSelectedGenres] = useState<string[]>([]);
   const [typeId, setTypeId] = useState<number | null>(null);
   const [statusId, setStatusId] = useState<number | null>(null);
   const [createEntry] = useMutation<ICreateEntryMutation>(
@@ -54,6 +56,15 @@ export default function CreateEntryPage() {
   const debouncedTitle = useDebounce(title, 1000);
 
   useEffect(() => {
+    const list = getAllGenresData?.getAllGenres ?? [];
+    setGenres(
+      list
+        .map((g) => g.name)
+        .filter((name): name is string => Boolean(name)),
+    );
+  }, [getAllGenresData]);
+
+  useEffect(() => {
     getInfoTmdb({
       variables: {
         input: { name: debouncedTitle },
@@ -68,7 +79,6 @@ export default function CreateEntryPage() {
         input: {
           title: title,
           description: description,
-          author: author,
           image: image,
           rating: rating,
           userId: 1,
@@ -128,23 +138,24 @@ export default function CreateEntryPage() {
           onChange={(e) => setDescription(e.target.value)}
         />
         <Input
-          type="text"
-          placeholder="Author"
-          value={author}
-          onChange={(e) => setAuthor(e.target.value)}
-        />
-        <Input
           type="number"
           placeholder="Rating"
           value={rating ?? ""}
           onChange={(e) => setRating(Number(e.target.value))}
         />
 
-        <CreateEntrySelect
-          value={genreId?.toString() ?? ""}
-          onChange={(value) => setGenreId(+value)}
-          options={getAllGenresData?.getAllGenres ?? []}
-          label="Genre"
+        <MultiSelect
+          options={genres}
+          value={selectedGenres}
+          onChange={(next) => {
+            setSelectedGenres(next);
+            const first = next[0];
+            const match = getAllGenresData?.getAllGenres?.find(
+              (g) => g.name === first,
+            );
+            setGenreId(match?.id ?? null);
+          }}
+          placeholder="Genre"
         />
 
         <CreateEntrySelect
