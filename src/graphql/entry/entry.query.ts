@@ -15,6 +15,7 @@ export const GET_INFO_FROM_TMDB_QUERY = gql`
       posterPath
       rating
       genreIds
+      mediaType
     }
   }
 `;
@@ -42,6 +43,15 @@ export const GET_ALL_TYPES_QUERY = gql`
     getAllTypes {
       id
       name
+    }
+  }
+`;
+
+export const GET_ALL_ENTRY = gql`
+  query GetAllEntry {
+    getAllEntry {
+      title
+      id
     }
   }
 `;

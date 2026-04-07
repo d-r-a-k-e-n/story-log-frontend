@@ -1,6 +1,7 @@
 export interface ICreateEntryMutation {
-  input: {
+  createEntry: {
+    id: number;
     title: string;
-    posterPath: string;
+    description?: string | null;
   };
 }

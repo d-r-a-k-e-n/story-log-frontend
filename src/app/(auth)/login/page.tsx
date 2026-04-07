@@ -7,8 +7,8 @@ import { useMutation } from "@apollo/client/react";
 import { LOGIN_MUTATION } from "@/src/graphql/auth/auth.mutation";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { ILoginResponse } from "@/src/app/auth/login/types/loginData.interface";
-import { ILoginInput } from "@/src/app/auth/login/types/loginInput.interface";
+import { ILoginResponse } from "@/src/app/(auth)/login/types/loginData.interface";
+import { ILoginInput } from "@/src/app/(auth)/login/types/loginInput.interface";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -67,7 +67,7 @@ export default function LoginPage() {
 
         <p className="text-sm text-muted-foreground mt-2">
           No account?{" "}
-          <Link href="/auth/register" className="underline">
+          <Link href="/register" className="underline">
             Register
           </Link>
         </p>
