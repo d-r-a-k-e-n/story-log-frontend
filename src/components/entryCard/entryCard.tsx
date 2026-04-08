@@ -8,9 +8,13 @@ export default function EntryCard({
   status,
   type,
   genres,
+  onClick,
 }: IEntryCardProps) {
   return (
-    <li className="flex flex-col w-full hover:bg-gray-100 rounded-md cursor-pointer">
+    <li
+      className="flex flex-col w-full hover:bg-gray-100 rounded-md cursor-pointer"
+      onClick={onClick}
+    >
       <div className="flex items-center gap-2">
         <Image
           src={image}
