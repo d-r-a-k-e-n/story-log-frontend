@@ -50,8 +50,20 @@ export const GET_ALL_TYPES_QUERY = gql`
 export const GET_ALL_ENTRY = gql`
   query GetAllEntry {
     getAllEntry {
-      title
       id
+      title
+      description
+      image
+      rating
+      status {
+        name
+      }
+      type {
+        name
+      }
+      genres {
+        name
+      }
     }
   }
 `;
