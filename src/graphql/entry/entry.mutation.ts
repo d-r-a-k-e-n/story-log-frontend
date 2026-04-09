@@ -9,3 +9,12 @@ export const CREATE_ENTRY_MUTATION = gql`
     }
   }
 `;
+
+export const DELETE_ENTRY_MUTATION = gql`
+  mutation DeleteEntry($id: Int!) {
+    deleteEntry(id: $id) {
+      id
+      title
+    }
+  }
+`;

@@ -2,8 +2,9 @@ import { IEntryCardProps } from "@/src/components/entryCard/entryCard.interfase"
 import Image from "next/image";
 import { Button } from "@/src/components/ui/button";
 
-interface Props extends Omit<IEntryCardProps, "onClick"> {
+interface IEntryDetailInfoCardProps extends Omit<IEntryCardProps, "onClick"> {
   onClose: () => void;
+  onDelete: () => void;
 }
 
 export default function EntryDetailInfoCard({
@@ -14,7 +15,8 @@ export default function EntryDetailInfoCard({
   type,
   genres,
   onClose,
-}: Props) {
+  onDelete,
+}: IEntryDetailInfoCardProps) {
   return (
     <div className="fixed inset-0 z-10 flex items-center justify-center">
       <div className="absolute inset-0 bg-black/50" onClick={onClose} />
@@ -28,7 +30,7 @@ export default function EntryDetailInfoCard({
             height={120}
             className="rounded-md"
           />
-          <div>
+          <div className="overflow-x-hidden">
             <h3 className="text-lg font-semibold truncate">{title}</h3>
             <p>
               <span className="font-medium">Status: </span>
@@ -38,7 +40,7 @@ export default function EntryDetailInfoCard({
               <span className="font-medium">Type: </span>
               {type.name}
             </p>
-            <p>
+            <p className="max-h-12 overflow-y-auto">
               <span className="font-medium">Genres: </span>
               {genres.map((g) => g.name).join(", ")}
             </p>
@@ -46,7 +48,7 @@ export default function EntryDetailInfoCard({
         </div>
         <div className="mt-4">
           <p className="font-medium mb-1">Description:</p>
-          <p className="max-h-52 overflow-y-auto">{description}</p>
+          <p className="h-52 overflow-y-auto">{description}</p>
         </div>
         <div className="flex justify-end mt-4">
           <Button
@@ -54,6 +56,12 @@ export default function EntryDetailInfoCard({
             className="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300"
           >
             Close
+          </Button>
+          <Button
+            onClick={onDelete}
+            className="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300"
+          >
+            Delete
           </Button>
         </div>
       </div>

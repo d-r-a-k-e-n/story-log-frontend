@@ -1,27 +1,29 @@
 "use client";
-import { useMutation, useLazyQuery, useQuery } from "@apollo/client/react";
+import { useLazyQuery, useMutation, useQuery } from "@apollo/client/react";
 import { CREATE_ENTRY_MUTATION } from "@/src/graphql/entry/entry.mutation";
 import { Button } from "@/src/components/ui/button";
 import { Input } from "@/src/components/ui/input";
-import { ICreateEntryMutation } from "@/src/app/create-entry/types/createEntry.interface";
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
+
 import {
-  IGetInfoFromTmdb,
-  IGetInfoFromTmdbItem,
-} from "@/src/app/create-entry/types/getInfoFromTmdb.interface";
-import {
-  GET_INFO_FROM_TMDB_QUERY,
   GET_ALL_GENRES_QUERY,
   GET_ALL_STATUSES_QUERY,
   GET_ALL_TYPES_QUERY,
+  GET_INFO_FROM_TMDB_QUERY,
 } from "@/src/graphql/entry/entry.query";
+
+import type {
+  ICreateEntryMutation,
+  IGetAllGenres,
+  IGetAllStatuses,
+  IGetAllTypes,
+  IGetInfoFromTmdb,
+  IGetInfoFromTmdbItem,
+} from "@/src/graphql/entry/entry.types";
+
 import { useDebounce } from "@/src/hooks/useDebounce";
 import { SearchResultCard } from "@/src/components/searchResultCard/searchResultCard";
 import { Textarea } from "@/src/components/ui/textarea";
-
-import { IGetAllGenres } from "@/src/app/create-entry/types/getAllGenres.interface";
-import { IGetAllStatuses } from "@/src/app/create-entry/types/getAllStatuses.interface";
-import { IGetAllTypes } from "@/src/app/create-entry/types/getAllTypes.interface";
 
 import { CreateEntrySelect } from "@/src/components/createEntrySelect/createEntrySelect";
 import { MultiSelect } from "@/src/components/ui/multi-select";
@@ -43,7 +45,7 @@ export default function CreateEntryPage() {
     useState<string>("");
   const [formError, setFormError] = useState<string>("");
   const [createEntry, { loading }] = useMutation<ICreateEntryMutation>(
-    CREATE_ENTRY_MUTATION,
+    CREATE_ENTRY_MUTATION
   );
 
   const [getInfoTmdb, { data: getInfoTmdbData }] =
@@ -53,7 +55,7 @@ export default function CreateEntryPage() {
     useQuery<IGetAllGenres>(GET_ALL_GENRES_QUERY);
 
   const { data: getAllStatusesData } = useQuery<IGetAllStatuses>(
-    GET_ALL_STATUSES_QUERY,
+    GET_ALL_STATUSES_QUERY
   );
 
   const { data: getAllTypesData } = useQuery<IGetAllTypes>(GET_ALL_TYPES_QUERY);
@@ -63,9 +65,7 @@ export default function CreateEntryPage() {
   useEffect(() => {
     const list = getAllGenresData?.getAllGenres ?? [];
     setGenres(
-      list
-        .map((g) => g.name)
-        .filter((name): name is string => Boolean(name)),
+      list.map((g) => g.name).filter((name): name is string => Boolean(name))
     );
   }, [getAllGenresData]);
 
@@ -75,7 +75,10 @@ export default function CreateEntryPage() {
       setIsSearchOpen(false);
       return;
     }
-    if (selectedFromSearchTitle && normalizedTitle === selectedFromSearchTitle) {
+    if (
+      selectedFromSearchTitle &&
+      normalizedTitle === selectedFromSearchTitle
+    ) {
       setIsSearchOpen(false);
       return;
     }
@@ -129,7 +132,7 @@ export default function CreateEntryPage() {
     rating: number,
     posterPath: string,
     tmdbGenreIds: string[],
-    mediaType: "movie" | "tv",
+    mediaType: "movie" | "tv"
   ) => {
     setTitle(title);
     setRating(rating);
@@ -140,7 +143,7 @@ export default function CreateEntryPage() {
     if (!getAllGenresData?.getAllGenres?.length || !tmdbGenreIds.length) return;
 
     const matchedGenres = getAllGenresData.getAllGenres.filter((genre) =>
-      tmdbGenreIds.includes(genre.name),
+      tmdbGenreIds.includes(genre.name)
     );
 
     if (matchedGenres.length) {
@@ -150,7 +153,7 @@ export default function CreateEntryPage() {
 
     const mappedTypeName = mediaType === "tv" ? "TV Show" : "Movie";
     const matchedType = getAllTypesData?.getAllTypes?.find(
-      (type) => type.name === mappedTypeName,
+      (type) => type.name === mappedTypeName
     );
     if (matchedType) {
       setTypeId(matchedType.id);
@@ -194,7 +197,7 @@ export default function CreateEntryPage() {
                           rating,
                           posterPath,
                           genreIds,
-                          mediaType,
+                          mediaType
                         )
                       }
                       key={posterPath}
@@ -203,7 +206,7 @@ export default function CreateEntryPage() {
                       rating={rating}
                       genres={genreIds}
                     />
-                  ),
+                  )
                 )}
               </div>
             )}
@@ -238,7 +241,7 @@ export default function CreateEntryPage() {
               .map(
                 (name) =>
                   getAllGenresData?.getAllGenres?.find((g) => g.name === name)
-                    ?.id,
+                    ?.id
               )
               .filter((id): id is number => typeof id === "number");
             setGenreIds(ids);

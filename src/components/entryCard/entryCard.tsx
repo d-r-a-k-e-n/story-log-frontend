@@ -24,7 +24,7 @@ export default function EntryCard({
           className="rounded-sm"
         />
         <div>
-          <h3>
+          <h3 className="line-clamp-1">
             <span className="font-medium">Title: </span>
             {title}
           </h3>

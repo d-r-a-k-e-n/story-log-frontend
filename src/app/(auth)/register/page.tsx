@@ -3,13 +3,15 @@
 import { useState } from "react";
 import { useMutation } from "@apollo/client/react";
 import {
-  REGISTER_MUTATION,
   LOGIN_MUTATION,
+  REGISTER_MUTATION,
 } from "@/src/graphql/auth/auth.mutation";
 import { Input } from "@/src/components/ui/input";
 import { Button } from "@/src/components/ui/button";
-import { ILoginResponse } from "@/src/app/(auth)/login/types/loginData.interface";
-import { ILoginInput } from "@/src/app/(auth)/login/types/loginInput.interface";
+import type {
+  ILoginInput,
+  ILoginResponse,
+} from "@/src/graphql/auth/auth.types";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 
@@ -52,7 +54,7 @@ export default function RegisterPage() {
   return (
     <section className="flex flex-col items-center justify-center min-h-screen p-4 sm:p-6">
       <form
-        className="flex flex-col gap-2 w-full max-w-[280px] sm:max-w-xs items-center"
+        className="flex flex-col gap-2 w-full max-w-70 sm:max-w-xs items-center"
         onSubmit={handleRegister}
       >
         <h1 className="text-xl font-medium mb-1">Register</h1>

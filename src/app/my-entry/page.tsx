@@ -1,14 +1,39 @@
 "use client";
-import { useQuery } from "@apollo/client/react";
-import { GET_ALL_ENTRY } from "@/src/graphql/entry/entry.query";
+import { useMutation, useQuery } from "@apollo/client/react";
+import { GET_ALL_ENTRY_QUERY } from "@/src/graphql/entry/entry.query";
 import EntryCard from "@/src/components/entryCard/entryCard";
-import type { IGetAllEntry } from "@/src/app/my-entry/types/getAllEntry.interface";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import EntryDetailInfoCard from "@/src/components/entryDetailInfoCard/entryDetailInfoCard";
+import { DELETE_ENTRY_MUTATION } from "@/src/graphql/entry/entry.mutation";
+
+import type {
+  IDeleteEntryResponse,
+  IDeleteEntryVariables,
+  IGetAllEntry,
+} from "@/src/graphql/entry/entry.types";
 
 export default function MyEntryPage() {
-  const { data } = useQuery<{ getAllEntry: IGetAllEntry[] }>(GET_ALL_ENTRY);
   const [selectedEntry, setSelectedEntry] = useState<IGetAllEntry | null>(null);
+  const { data, refetch } = useQuery<{ getAllEntry: IGetAllEntry[] }>(
+    GET_ALL_ENTRY_QUERY
+  );
+  const [deleteEntry] = useMutation<
+    IDeleteEntryResponse | IDeleteEntryVariables
+  >(DELETE_ENTRY_MUTATION);
+
+  async function onDeleteEntry(id: number) {
+    await deleteEntry({
+      variables: {
+        id,
+      },
+    });
+    setSelectedEntry(null);
+    await refetch();
+  }
+
+  useEffect(() => {
+    refetch().then();
+  }, [refetch]);
 
   return (
     <main className="p-6">
@@ -25,6 +50,7 @@ export default function MyEntryPage() {
         <EntryDetailInfoCard
           {...selectedEntry}
           onClose={() => setSelectedEntry(null)}
+          onDelete={() => onDeleteEntry(Number(selectedEntry.id))}
         />
       )}
     </main>

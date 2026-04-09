@@ -35,6 +35,7 @@ export default function RootLayout({
             <Link href="/create-entry">Create Entry</Link>
             <Link href="/my-entry">My Entry</Link>
             <Link href="/recommendations">Recommendations</Link>
+            <Link href="/login">Login</Link>
           </nav>
         </header>
         <Providers>{children}</Providers>
